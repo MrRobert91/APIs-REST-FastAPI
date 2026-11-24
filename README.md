@@ -63,15 +63,86 @@ Tests:
 pytest
 ```
 
-## Probar con curl
+## Probar la API desplegada con curl
 
-Con la API en marcha, en otra terminal:
+La API está desplegada en **https://apis-rest-fastapi.sliplane.app**. Puedes probarla desde cualquier terminal sin instalar nada (solo `curl`, que viene en macOS, Linux y Windows 10/11). Su documentación interactiva está en https://apis-rest-fastapi.sliplane.app/docs.
+
+Guarda la URL base en una variable para no repetirla:
 
 ```bash
-bash probar.sh
+URL=https://apis-rest-fastapi.sliplane.app
 ```
 
-Crea una tarea, la lista, la marca como completada, la borra y comprueba que después da 404. En Windows con PowerShell las comillas del JSON pueden dar problemas: usa `/docs`, Git Bash o un cliente como Postman o Bruno.
+**Bienvenida**
+
+```bash
+curl $URL/
+```
+
+**Crear una tarea** (responde `201` con la tarea y su `id`)
+
+```bash
+curl -X POST $URL/tareas \
+  -H "Content-Type: application/json" \
+  -d '{"titulo": "Repasar REST", "prioridad": 2}'
+```
+
+**Listar las tareas** (con paginación opcional)
+
+```bash
+curl $URL/tareas
+curl "$URL/tareas?skip=0&limit=5"
+```
+
+**Ver una tarea** (cambia `1` por el `id` que te devolvió la creación)
+
+```bash
+curl $URL/tareas/1
+```
+
+**Marcar como completada** (PATCH: solo cambia los campos que envías)
+
+```bash
+curl -X PATCH $URL/tareas/1 \
+  -H "Content-Type: application/json" \
+  -d '{"completada": true}'
+```
+
+**Borrar una tarea** (`-i` muestra el código: `204 No Content`)
+
+```bash
+curl -i -X DELETE $URL/tareas/1
+```
+
+**Ver los errores**
+
+```bash
+curl -i $URL/tareas/9999          # 404: la tarea no existe
+curl -i $URL/tareas/abc           # 422: el id no es un número
+curl -i -X POST $URL/tareas \
+  -H "Content-Type: application/json" \
+  -d '{"titulo": "Ok", "prioridad": 9}'   # 422: título corto y prioridad fuera de rango
+```
+
+**Todo de una vez**: el script `probar.sh` crea una tarea, la lista, la marca como completada, la borra y comprueba que después da 404.
+
+```bash
+bash probar.sh https://apis-rest-fastapi.sliplane.app
+```
+
+> Las tareas se guardan en memoria y la API es compartida: verás también las tareas que creen otras personas, y todas se borran cuando se reinicia el servidor.
+
+**En Windows:** en PowerShell, `curl` es un alias de otro comando y las comillas del JSON dan problemas. Usa `curl.exe` en lugar de `curl` y escapa las comillas interiores (`-d '{\"titulo\": \"Repasar REST\"}'`), o ejecuta los comandos en Git Bash. También puedes probarlo todo desde `/docs`.
+
+## Probar en local con curl
+
+Con la API en marcha en tu ordenador, en otra terminal:
+
+```bash
+bash probar.sh                   # usa http://127.0.0.1:8000 por defecto
+```
+
+Los mismos comandos de arriba funcionan cambiando la URL base: `URL=http://127.0.0.1:8000`.
 
 ## Archivos
 
