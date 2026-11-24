@@ -42,6 +42,15 @@ Para ejecutar los tests dentro del contenedor (con él en marcha):
 docker compose exec api python -m pytest
 ```
 
+### Desplegar en Sliplane
+
+Crea un servicio desde este repositorio (rama `main`, Dockerfile en la raíz) con esta configuración:
+
+- **Expose Service:** activado.
+- **Override CMD:** vacío (se usa el `CMD` del Dockerfile).
+- **Health check path:** `/`.
+- **Variable de entorno** (opcional): `PORT=8000`. La API escucha en el puerto que indique `PORT` y, si no hay ninguno, en el 8000.
+
 ## Opción 2: con Python
 
 Necesitas **Python 3.10 o superior**.
