@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    image: api-tareas
+    container_name: api-tareas
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
